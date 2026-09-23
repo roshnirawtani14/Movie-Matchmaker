@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Manrope", "Segoe UI", system-ui, sans-serif;
+
+  --color-ink-950: #0b0b12;
+  --color-ink-900: #121220;
+  --color-ink-800: #1a1a2e;
+  --color-ink-700: #24243d;
+  --color-ink-600: #35355a;
+
+  --color-ember-500: #ff5470;
+  --color-ember-400: #ff7a90;
+  --color-ember-600: #e13a58;
+
+  --color-glow-500: #7c5cff;
+  --color-glow-400: #9b82ff;
+
+  --color-mint-400: #3ddc97;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-display);
+  background: radial-gradient(circle at 20% -10%, #26264a 0%, #121220 45%, #0b0b12 100%);
+  color: #f4f3fb;
+  overscroll-behavior-y: contain;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -1,0 +1,12 @@
+# Used by the Supabase CLI (`supabase link`, `supabase db push`, `supabase functions deploy`).
+# Run `supabase link --project-ref YOUR_PROJECT_REF` once — it fills in project_id below for you.
+project_id = "movie-night-matchmaker"
+
+[functions.start-matching]
+verify_jwt = true
+
+[functions.record-swipe]
+verify_jwt = true
+
+[functions.complete-round]
+verify_jwt = true
