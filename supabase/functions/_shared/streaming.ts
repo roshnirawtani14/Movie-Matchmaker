@@ -31,6 +31,9 @@ const PLATFORM_LABELS: Record<string, string> = {
   altbalaji: "Alt Balaji",
   hungamaplay: "Hungama Play",
   curiositystream: "Curiosity Stream",
+  tatasky: "Tata Play",
+  amazon: "Amazon Prime Video",
+  microsoft: "Microsoft Store",
 };
 
 function labelFor(platformCode: string): string {
