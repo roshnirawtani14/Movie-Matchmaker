@@ -1,6 +1,6 @@
 import { handleOptions, jsonResponse } from "../_shared/cors.ts";
 import { serviceClient } from "../_shared/supabase.ts";
-import { generateBrief } from "../_shared/claude.ts";
+import { generateBrief } from "../_shared/gemini.ts";
 import { fetchTitlePoolWithFallback } from "../_shared/tmdb.ts";
 
 const POOL_SIZE = 30;

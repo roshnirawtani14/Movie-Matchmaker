@@ -1,7 +1,7 @@
 # Movie Night Matchmaker 🍿
 
 Two people, two moods, one swipe deck. Partner A sets up tonight's vibe, shares a QR code,
-Partner B joins independently, Claude merges both preference profiles into a search brief, and
+Partner B joins independently, Gemini merges both preference profiles into a search brief, and
 you both swipe through the same 30 titles (in different orders) until you match — with a direct
 link to exactly where to stream it in India.
 
@@ -9,7 +9,7 @@ link to exactly where to stream it in India.
 
 - **Frontend**: React + Vite + TypeScript + Tailwind CSS v4 + Framer Motion (swipe gestures) + `qrcode.react`
 - **Backend**: Supabase Postgres (data + Realtime sync between partners) + Supabase Edge Functions (Deno) for anything that needs a secret API key
-- **External APIs**: Anthropic (Claude) for brief generation/refinement, TMDB for titles/metadata, RapidAPI "Streaming Availability" for Indian OTT platforms
+- **External APIs**: Google Gemini for brief generation/refinement, TMDB for titles/metadata, RapidAPI "OTT details" for Indian OTT platforms
 
 No login/accounts — each partner is identified by an anonymous id stored in their browser's
 `localStorage`, scoped to that movie-night session.
@@ -38,16 +38,17 @@ session id + partner id in localStorage *is* the access boundary), and turns on 
 
 | Service | Where to get it | Used for |
 |---|---|---|
-| **Anthropic (Claude)** | [console.anthropic.com](https://console.anthropic.com) → API Keys | Merging both partners' preferences into a search brief, and refining it for round 2 |
+| **Google Gemini** | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | Merging both partners' preferences into a search brief, and refining it for round 2 |
 | **TMDB** | [themoviedb.org](https://www.themoviedb.org/settings/api) → API → copy the **API Read Access Token (v4 auth)** | Titles, posters, ratings, runtime, synopses |
-| **RapidAPI — Streaming Availability** | [rapidapi.com](https://rapidapi.com/movie-of-the-night-movie-of-the-night-default/api/streaming-availability) → Subscribe → copy your RapidAPI key | Which Indian OTT platforms a title is on right now, with direct links |
+| **RapidAPI — OTT details** | [rapidapi.com/gox-ai-gox-ai-default/api/ott-details](https://rapidapi.com/gox-ai-gox-ai-default/api/ott-details) → Subscribe → copy your RapidAPI key | Which Indian OTT platforms a title is on right now, with direct links |
 
 Set these as **Edge Function secrets** (never in frontend code or `.env` that ships to the browser):
 
 ```bash
-supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
+supabase secrets set GEMINI_API_KEY=...
 supabase secrets set TMDB_API_KEY=your-tmdb-v4-read-access-token
 supabase secrets set RAPIDAPI_KEY=your-rapidapi-key
+supabase secrets set RAPIDAPI_HOST=ott-details.p.rapidapi.com
 ```
 
 `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are injected automatically into every Edge
@@ -61,13 +62,13 @@ supabase functions deploy record-swipe
 supabase functions deploy complete-round
 ```
 
-- **`start-matching`** — runs once both partners submit preferences. Calls Claude to build a
+- **`start-matching`** — runs once both partners submit preferences. Calls Gemini to build a
   search brief, then TMDB to pull the first pool of 30 titles.
 - **`record-swipe`** — called on every swipe. Detects a mutual right-swipe and, the instant it
   happens, looks up Indian streaming platforms and writes the match — both screens pick it up via
   Realtime at the same moment.
 - **`complete-round`** — called when a partner finishes their deck. Once both are done with no
-  match: round 1 → Claude refines the brief from what was actually liked and TMDB returns a fresh
+  match: round 1 → Gemini refines the brief from what was actually liked and TMDB returns a fresh
   deduplicated pool of 30; round 2 → computes the top 5 by combined swipe score for the "you two
   decide" screen.
 
@@ -104,11 +105,11 @@ one phone with another).
 
 ## Known limitation: "IMDb rating"
 
-The brief only lists four external connections (Claude, TMDB, RapidAPI, Supabase) — no OMDb/IMDb
-API. TMDB doesn't expose real IMDb scores, so the "minimum rating" filter and the number shown on
-each card are **TMDB's own community rating** (same 0–10 scale, generally very close to IMDb, but
-not the same underlying number). If you want the literal IMDb score, add OMDb as a fifth
-integration — `supabase/functions/_shared/tmdb.ts` is where the rating is read off each title.
+There's no OMDb/IMDb API wired in. TMDB doesn't expose real IMDb scores, so the "minimum rating"
+filter and the number shown on each card are **TMDB's own community rating** (same 0–10 scale,
+generally very close to IMDb, but not the same underlying number). If you want the literal IMDb
+score, add OMDb as another integration — `supabase/functions/_shared/tmdb.ts` is where the rating
+is read off each title.
 
 ## Project structure
 
@@ -120,5 +121,5 @@ src/
   pages/        Home, Join, Preferences, Waiting, Swipe, Match, FinalPick, Rate
 supabase/
   migrations/   0001_init.sql — full schema, RLS policies, Realtime publication
-  functions/    start-matching, record-swipe, complete-round, _shared/ (claude, tmdb, streaming, cors, supabase client)
+  functions/    start-matching, record-swipe, complete-round, _shared/ (gemini, tmdb, streaming, cors, supabase client)
 ```

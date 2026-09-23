@@ -1,6 +1,6 @@
 import { handleOptions, jsonResponse } from "../_shared/cors.ts";
 import { serviceClient } from "../_shared/supabase.ts";
-import { refineBrief } from "../_shared/claude.ts";
+import { refineBrief } from "../_shared/gemini.ts";
 import { fetchTitlePoolWithFallback } from "../_shared/tmdb.ts";
 import { getIndianStreamingPlatforms } from "../_shared/streaming.ts";
 import type { Title } from "../_shared/types.ts";

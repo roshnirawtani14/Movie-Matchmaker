@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 const MESSAGES = [
   "Reading the room...",
   "Negotiating between two very different moods...",
-  "Asking Claude to find common ground...",
+  "Asking Gemini to find common ground...",
   "Scanning what's actually good tonight...",
   "Checking what's streaming in India right now...",
 ];
